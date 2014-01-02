@@ -96,7 +96,7 @@ namespace Knx
 
                     o.name =  i.name;
                     o.destAdr = new EIB_Adress(i.EibAdress);
-                    o.sourceAdr = new EIB_Adress(0, EIB_Adress_Typ.PhysAdr);
+                    //o.sourceAdr = new EIB_Adress(0, EIB_Adress_Typ.PhysAdr);
                     o.unit = i.unit;
                     
                     hdKnxObjList.Add(o.destAdr, o);

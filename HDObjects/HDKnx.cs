@@ -7,8 +7,8 @@ namespace Knx
 {
     public class HDKnx : HDObject
     {
-        private EIB_Adress m_sourceAdr;
         private EIB_Adress m_destAdr;
+        protected EIS_Typ eisTyp = EIS_Typ.unknown;
         private cEMI emi;
 
         public HDKnx()
@@ -19,7 +19,7 @@ namespace Knx
         public HDKnx(cEMI emi)
         {
             this.emi = emi;
-            m_sourceAdr = emi.sourceAdr;
+            //m_sourceAdr = emi.sourceAdr;
             m_destAdr = emi.destinationAdr;
             time = emi.receiveTime;
             name = "auto_" + time.ToShortTimeString();
@@ -33,15 +33,6 @@ namespace Knx
         {
             get { return m_destAdr; }
             set { m_destAdr = value; }
-        }
-
-        /// <summary>
-        /// Quelladresse
-        /// </summary>
-        public EIB_Adress sourceAdr
-        {
-            get { return m_sourceAdr; }
-            set { m_sourceAdr = value; }
         }
 
 
@@ -61,7 +52,7 @@ namespace Knx
 
         public override String ToString()
         {
-            String erg = time +": " + name + " [" + m_sourceAdr.ToString().PadLeft(9) + "-->" + m_destAdr.ToString().PadRight(7) + "] " + DataToString();
+            String erg = time +": " + name + " [" + m_destAdr.ToString().PadRight(7) + "] " + DataToString();
             return erg;
 
         }

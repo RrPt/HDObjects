@@ -156,12 +156,12 @@ namespace Knx
 
     }
 
-    class KnxIpTelegramm
+    class KnxIpTelegrammGenerator
     {
         byte[] _bytes;
         KnxNetConnection con;
 
-        public KnxIpTelegramm(KnxNetConnection con)
+        public KnxIpTelegrammGenerator(KnxNetConnection con)
         {
             this.con = con;
         }
@@ -172,25 +172,29 @@ namespace Knx
             //set; 
         }
 
-        internal void Connect()
+        /// <summary>
+        /// 
+        /// </summary>
+        internal void SetConnectTelegramm()
         {
             List<byte> l = new List<byte>();
 
             KnxIpHeader header = new KnxIpHeader(knxnetip_services.CONNECT_REQUEST);
-            KnxHpai Control = new KnxHpai(con.myIP, con.clientPort);
-            KnxHpai Data = new KnxHpai(con.myIP, con.clientPort);
+            KnxHpai ControlCon = new KnxHpai(con.myIP, con.clientPort);
+            KnxHpai DataCon = new KnxHpai(con.myIP, con.clientPort);
             KnxCri Cri = new KnxCri();
 
-            header.Length = (short)(header.bytes.Length + Control.bytes.Length + Data.bytes.Length + Cri.bytes.Length);
+            header.Length = (short)(header.bytes.Length + ControlCon.bytes.Length + DataCon.bytes.Length + Cri.bytes.Length);
             l.AddRange(header.bytes);
-            l.AddRange(Control.bytes);
-            l.AddRange(Data.bytes);
+            l.AddRange(ControlCon.bytes);
+            l.AddRange(DataCon.bytes);
             l.AddRange(Cri.bytes);
            
-            _bytes = l.ToArray();        }
+            _bytes = l.ToArray();       
+        }
 
 
-        internal void Disconnect()
+        internal void SetDisconnectTelegramm()
         {
             List<byte> l = new List<byte>();
 
@@ -207,7 +211,7 @@ namespace Knx
         }
 
 
-        internal void Heartbeat()
+        internal void SetHeartbeatTelegramm()
         {
             List<byte> l = new List<byte>();
 
@@ -225,7 +229,7 @@ namespace Knx
 
 
 
-        internal void DataAck(byte SeqCounter)
+        internal void SetDataAckTelegramm(byte SeqCounter)
         {
             List<byte> l = new List<byte>();
 
@@ -243,7 +247,7 @@ namespace Knx
         }
 
 
-        internal void Data(cEMI emi,byte SeqCounter)
+        internal void SetDataTelegramm(cEMI emi,byte SeqCounter)
         {
             List<byte> l = new List<byte>();
 
@@ -273,6 +277,7 @@ namespace Knx
         public delegate void LoggingDelegate(string Text);
         public delegate void TelegramReceivedDelegate(cEMI emi);
         public delegate void DataChangedDelegate(HDKnx hdKnx);
+        public bool QueueEnable { get; set; }
 
         // private Member
         const int OpenTimeout = 5;
@@ -335,7 +340,7 @@ namespace Knx
             dataChanged = DataChangedFunction;
         }
 
-        public bool QueueEnable { get; set; }
+
 
         /// <summary>
         /// Abfrage der ChannnelId die vom Gateway für diese Verbindung festgelegt wird.
@@ -395,8 +400,8 @@ namespace Knx
 
                 udpClient.Connect(gatewayIp, gatewayPort);
 
-                KnxIpTelegramm Tele = new KnxIpTelegramm(this);
-                Tele.Connect();
+                KnxIpTelegrammGenerator Tele = new KnxIpTelegrammGenerator(this);
+                Tele.SetConnectTelegramm();
                 byte[] TeleBytes = Tele.bytes;
 
                 //KnxNetForm.tb_Log.AppendText(Environment.NewLine + "O>:" + KnxTools.BytesToString(TeleBytes));
@@ -438,8 +443,8 @@ namespace Knx
         {
             try
             {
-                KnxIpTelegramm Tele = new KnxIpTelegramm(this);
-                Tele.Disconnect();
+                KnxIpTelegrammGenerator Tele = new KnxIpTelegrammGenerator(this);
+                Tele.SetDisconnectTelegramm();
                 byte[] TeleBytes = Tele.bytes;
 
                 //KnxNetForm.tb_Log.AppendText(Environment.NewLine + "C>:" + KnxTools.BytesToString(TeleBytes));
@@ -487,8 +492,8 @@ namespace Knx
             }
             try
             {
-                KnxIpTelegramm Tele = new KnxIpTelegramm(this);
-                Tele.Heartbeat();
+                KnxIpTelegrammGenerator Tele = new KnxIpTelegrammGenerator(this);
+                Tele.SetHeartbeatTelegramm();
                 byte[] TeleBytes = Tele.bytes;
 
                // KnxNetForm
@@ -510,8 +515,8 @@ namespace Knx
         {
             try
             {
-                KnxIpTelegramm Tele = new KnxIpTelegramm(this);
-                Tele.DataAck(seqNo);
+                KnxIpTelegrammGenerator Tele = new KnxIpTelegrammGenerator(this);
+                Tele.SetDataAckTelegramm(seqNo);
                 byte[] TeleBytes = Tele.bytes;
 
                 // KnxNetForm
@@ -535,8 +540,8 @@ namespace Knx
         {
             try
             {
-                KnxIpTelegramm Tele = new KnxIpTelegramm(this);
-                Tele.Data(emi,SeqCounter++);
+                KnxIpTelegrammGenerator Tele = new KnxIpTelegrammGenerator(this);
+                Tele.SetDataTelegramm(emi,SeqCounter++);
                 byte[] TeleBytes = Tele.bytes;
 
                 // KnxNetForm

@@ -6,25 +6,28 @@ namespace Knx
 {
     class EIS5 : HDKnx
     {
+        public float value { get; set; }
+
+        
         public EIS5()
         {
+            eisTyp = EIBDef.EIS_Typ.EIS5; 
         }
 
         public EIS5(cEMI emi) : base(emi)
         {
+            eisTyp = EIBDef.EIS_Typ.EIS5;
             value = emi.Eis5;
         }
 
-        public EIS5(string name, EIBDef.EIB_Adress adr)
-        {
-            // TODO: Complete member initialization
-            this.name = name;
-            destAdr = adr;
-            sourceAdr = new EIBDef.EIB_Adress(0);
-            value = 0f;
-        }
+        //public EIS5(string name, EIBDef.EIB_Adress adr)
+        //{
+        //    eisTyp = EIBDef.EIS_Typ.EIS5;
+        //    this.name = name;
+        //    destAdr = adr;
+        //    value = 0f;
+        //}
 
-        public float value { get; set; }
 
 
         public override  void SetValue(cEMI emi) 

@@ -275,7 +275,7 @@ namespace EIBDef
     ///<summary>
     ///Definiert ein EIB-Bus Telegramm
     ///</summary>
-    class EIB_Telegramm
+    public class EIB_Telegramm
     {
         private const int EIB_Phys_Source_Adr = 0x1280; // 1.2.128
 

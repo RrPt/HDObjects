@@ -9,10 +9,12 @@ namespace Knx
 
         public EIS11()
         {
+            eisTyp = EIBDef.EIS_Typ.EIS11; 
         }
 
         public EIS11(cEMI emi) : base(emi)
         {
+            eisTyp = EIBDef.EIS_Typ.EIS11;
             value = emi.Eis11;
         }
 
