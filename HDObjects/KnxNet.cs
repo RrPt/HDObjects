@@ -545,7 +545,7 @@ namespace Knx
                 byte[] TeleBytes = Tele.bytes;
 
                 // KnxNetForm
-                Log("H>:" + KnxTools.BytesToString(TeleBytes));
+                Log("D>:" + KnxTools.BytesToString(TeleBytes));
 
                 udpClient.Send(TeleBytes, TeleBytes.Length);
             }
