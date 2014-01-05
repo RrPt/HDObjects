@@ -5,8 +5,9 @@ using EIBDef;
 using System.Xml.Serialization;
 using System.IO;
 using System.Xml;
+using Knx;
 
-namespace Knx
+namespace HomeData
 {
     class EisConvert<T> where T : HDKnx, new()
     {

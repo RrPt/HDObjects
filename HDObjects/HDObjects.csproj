@@ -43,6 +43,7 @@
     <Compile Include="EIS3.cs" />
     <Compile Include="EIS5.cs" />
     <Compile Include="HDKnx.cs" />
+    <Compile Include="HdKnxAdr.cs" />
     <Compile Include="HDKnxHandler.cs" />
     <Compile Include="HDObject.cs" />
     <Compile Include="KnxNet.cs" />

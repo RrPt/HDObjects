@@ -4,7 +4,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using EIBDef;
 
-namespace Knx
+namespace HomeData
 {
 
 

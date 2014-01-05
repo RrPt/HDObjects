@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using EIBDef;
+using HomeData;
 
-namespace Knx
+namespace HomeData
 {
     public class HDKnx : HDObject
     {

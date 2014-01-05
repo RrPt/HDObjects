@@ -8,7 +8,7 @@ using System.Timers;
 using EIBDef;
 
 
-namespace Knx
+namespace HomeData
 {
     enum KnxConnectionState
     {
