@@ -58,7 +58,7 @@ namespace Knx
                 else
                     m_destination = new EIB_Adress((array[DestAdrH] << 8) + array[DestAdrL], EIB_Adress_Typ.PhysAdr);
                 // Datenlänge
-                m_DataLen = array[dataLen];
+                m_DataLen = array[dataLen]&0x0f;
 
                 // APCI bestimmen
                 m_APCI = (APCI_Typ)((array[10] >> 6) & 0x03);
