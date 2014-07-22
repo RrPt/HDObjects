@@ -276,6 +276,7 @@ namespace HomeData
         public string gatewayIp;
         public delegate void LoggingDelegate(string Text);
         public delegate void TelegramReceivedDelegate(cEMI emi);
+        public delegate void RawTelegramReceivedDelegate(byte[] raw);
         public delegate void DataChangedDelegate(HDKnx hdKnx);
         public bool QueueEnable { get; set; }
 
@@ -288,9 +289,12 @@ namespace HomeData
         Queue<cEMI> fromKnxQueue = new Queue<cEMI>();
         byte _channelId = 0;
         private static Timer timerHeartbeat;
+
         LoggingDelegate Log = null;
-        TelegramReceivedDelegate TelegramReceived = null;
+        TelegramReceivedDelegate telegramReceived = null;
+        RawTelegramReceivedDelegate rawTelegramReceived = null;
         DataChangedDelegate dataChanged = null;
+
         byte SeqCounter = 0;
         
 
@@ -324,7 +328,20 @@ namespace HomeData
         ///                       Kann auch null gesetzt werden</param>
         public void SetReceivedFunction(TelegramReceivedDelegate ReceivedFunction)
         {
-            TelegramReceived = ReceivedFunction;
+            telegramReceived = ReceivedFunction;
+        }
+
+
+        /// <summary>
+        /// Setzt die Funktion, an die empfangene Telegramme übergeben werden sollen
+        /// wird keine angegeben so werden diese in eine interne Queue gespeichert
+        /// </summary>
+        /// <param name="ReceivedFunction"> Funktion an die die Telegrammdaten übergeben werden soll</param>
+        /// <param name="control">Angabe eines evtl. Controls, falls ein Invoke durchgeführt werden muss.
+        ///                       Kann auch null gesetzt werden</param>
+        public void SetRawReceivedFunction(RawTelegramReceivedDelegate ReceivedFunction)
+        {
+            rawTelegramReceived = ReceivedFunction;
         }
 
 
@@ -648,15 +665,21 @@ namespace HomeData
                         // und dort den Wert setzen, falls erforderlich
                         hdKnx.SetValue(emi);
 
+                        // Rohdaten melden falls gewünscht
+                        if (rawTelegramReceived != null)
+                        {
+                            rawTelegramReceived(t);
+                        }
+
                         // geänderte Daten melden falls gewünscht
                         if (dataChanged != null)
                         {
                             dataChanged(hdKnx);
                         }
 
-                        if (TelegramReceived != null)
+                        if (telegramReceived != null)
                         {   // Ein Delegate ist eingerichtet, dann diesen aufrufen
-                            TelegramReceived(emi);
+                            telegramReceived(emi);
                         }
                         if (QueueEnable)
                         {   // in Queue speichern
