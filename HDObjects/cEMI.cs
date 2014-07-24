@@ -186,6 +186,7 @@ namespace HomeData
         public override string ToString()
         {
             String erg = m_ReceiveTime + " [" + m_source.ToString().PadLeft(9) + "-->" + m_destination.ToString().PadRight(7) + " (" + m_APCI.ToString().PadLeft(7) + ")]: ";
+            erg = erg + DataToString();
             switch (m_DataLen)
             {
                 case 1: erg = erg + "  EIS1=" + Eis1.ToString().PadRight(7);
@@ -200,7 +201,7 @@ namespace HomeData
                 default:
                     break;
             }
-            erg = erg + DataToString();
+
             return erg;
         }
 
@@ -211,7 +212,7 @@ namespace HomeData
             String erg = "";
             for (ushort i = 0; i < m_DataLen; i++)
             {
-                erg += m_value[i].ToString() + " ";
+                erg += m_value[i].ToString("X2") + " ";
             }
             return erg;
         }
