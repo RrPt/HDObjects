@@ -98,14 +98,14 @@ namespace HomeData
             Set(serverIp, port);
         }
 
-        public KnxHpai(IPAddress serverIp, int port)
+        public KnxHpai(IPAddress myIp, int port)
         {
-            Set(serverIp, port);
+            Set(myIp, port);
         }
 
-        private void Set(IPAddress serverIp, int port)
+        private void Set(IPAddress myIp, int port)
         {
-            byte[] _ip = serverIp.GetAddressBytes();
+            byte[] _ip = myIp.GetAddressBytes();
 
             ipport[0] = 0x08;     // client HPAI structure len (8 bytes)
             ipport[1] = 0x01;     // protocol type (1 = UDP);
@@ -380,8 +380,6 @@ namespace HomeData
         {
             QueueEnable = false;
             Log = LogIntern;
-            IPHostEntry Host = Dns.GetHostEntry(Dns.GetHostName());
-            myIP = Host.AddressList[1];
             while (udpClient == null)
             {
                 try
@@ -416,6 +414,7 @@ namespace HomeData
             {
 
                 udpClient.Connect(gatewayIp, gatewayPort);
+                myIP = ((IPEndPoint)udpClient.Client.LocalEndPoint).Address;
 
                 KnxIpTelegrammGenerator Tele = new KnxIpTelegrammGenerator(this);
                 Tele.SetConnectTelegramm();
