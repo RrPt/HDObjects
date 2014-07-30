@@ -99,8 +99,11 @@ namespace HomeData
                     o.destAdr = new EIB_Adress(i.EibAdress);
                     //o.sourceAdr = new EIB_Adress(0, EIB_Adress_Typ.PhysAdr);
                     o.unit = i.unit;
-                    
-                    hdKnxObjList.Add(o.destAdr, o);
+
+                    if (!hdKnxObjList.ContainsKey(o.destAdr))
+                    {
+                        hdKnxObjList.Add(o.destAdr, o);
+                    }
                 }
 
                 return ;
