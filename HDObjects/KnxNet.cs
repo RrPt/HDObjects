@@ -652,6 +652,12 @@ namespace HomeData
             Byte[] receiveBytes =  udpClient.EndReceive(ar, ref e);
             Anz++;
             Console.WriteLine("Telegr[" + Anz + "]=" + KnxTools.BytesToString(receiveBytes));
+            int AnzBytes = receiveBytes.Length;
+            if (AnzBytes < 7)
+            {
+                Log("Err: Telegramm zu kurz, wird verworfen. " + KnxTools.BytesToString(receiveBytes));
+                return;
+            }
             try
             {
 
@@ -761,6 +767,7 @@ namespace HomeData
                     else if (receiveBytes[3] == 0x21)
                     {   // Bestätigung eines Datentelegramm
                         Console.WriteLine("Daten bestätigt  status = " + receiveBytes[9]);
+                        Log("Daten bestätigt.  status = " + receiveBytes[9]);
                     }
                 }
                 ar = udpClient.BeginReceive(new AsyncCallback(ReceiveCallback), Anz);
@@ -769,7 +776,8 @@ namespace HomeData
             {
 
                 Console.WriteLine(ex.ToString());
-                Log("ReceiveCallback: " + e.ToString());
+                Log("Telegr[" + Anz + "]=" + KnxTools.BytesToString(receiveBytes));
+                Log("ReceiveCallback: " + ex.ToString());
             }
         }
 
