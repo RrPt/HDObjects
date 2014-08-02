@@ -542,14 +542,14 @@ namespace HomeData
                 }
                 else
                 {
-                    Log("Heartbeat: State =" + ConnectionState.ToString());
+                    Log("Err: Heartbeat: State =" + ConnectionState.ToString());
                 }
 
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                Log("Heartbeat: " + e.ToString());
+                Log("Err: Heartbeat: " + e.ToString());
             }
             return ;
         }
@@ -560,7 +560,7 @@ namespace HomeData
             // zuerst pingen ob KnxGateway noch erreichbar
             if (!pingOk())
             {
-                Log("KNXGateway " + gatewayIp + " kann nicht erreicht werden (ping)");
+                Log("Err: KNXGateway " + gatewayIp + " kann nicht erreicht werden (ping)");
                 Info("KNXGateway " + gatewayIp + " kann nicht erreicht werden (ping)");
                 // dann können wir nur warten ob dies beim nächsten Heartbeat besser ist
                 return;
@@ -575,9 +575,9 @@ namespace HomeData
             if (ConnectionState != KnxConnectionState.connected)
             {
                 // der letzte Heartbeat-Request wurde nicht beantwortet
-                Log("Connection ist im Status:" + ConnectionState.ToString());
+                Log("Err: Connection ist im Status:" + ConnectionState.ToString());
                 // versuchen die Connection neu zu öffnen
-                Log("Connection wird neu aufgebaut");
+                Log("Err: Connection wird neu aufgebaut");
                 Info("Connection ist im Status:" + ConnectionState.ToString() + "  Connection wird neu aufgebaut");
                 
                 Open(this.gatewayIp);
@@ -776,8 +776,8 @@ namespace HomeData
             {
 
                 Console.WriteLine(ex.ToString());
-                Log("Telegr[" + Anz + "]=" + KnxTools.BytesToString(receiveBytes));
-                Log("ReceiveCallback: " + ex.ToString());
+                Log("Err: Telegr[" + Anz + "]=" + KnxTools.BytesToString(receiveBytes));
+                Log("Err: ReceiveCallback: " + ex.ToString());
             }
         }
 
