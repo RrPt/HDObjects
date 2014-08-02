@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Collections;
 using System.Timers;
 using EIBDef;
+using System.Net.NetworkInformation;
 
 
 namespace HomeData
@@ -275,6 +276,7 @@ namespace HomeData
         public int gatewayPort = 3671;
         public string gatewayIp;
         public delegate void LoggingDelegate(string Text);
+        public delegate void SendInfoDelegate(string Text);
         public delegate void TelegramReceivedDelegate(cEMI emi);
         public delegate void RawTelegramReceivedDelegate(byte[] raw);
         public delegate void DataChangedDelegate(HDKnx hdKnx);
@@ -291,6 +293,7 @@ namespace HomeData
         private static Timer timerHeartbeat;
 
         LoggingDelegate Log = null;
+        SendInfoDelegate Info = null;
         TelegramReceivedDelegate telegramReceived = null;
         RawTelegramReceivedDelegate rawTelegramReceived = null;
         DataChangedDelegate dataChanged = null;
@@ -308,6 +311,15 @@ namespace HomeData
             Log = LogFunction;
         }
 
+        /// <summary>
+        /// Setzt die Funktion, an die Logausgaben übergeben werden sollen
+        /// wird keine angegeben so wird LogIntern verwendet
+        /// </summary>
+        /// <param name="LogFunction"></param>
+        public void SetInfo(SendInfoDelegate InfoFunction)
+        {
+            Info = InfoFunction;
+        }
 
         /// <summary>
         /// Verwendete Logfunktion, falls keine externe über SetLog gemeldet wurde
@@ -380,6 +392,13 @@ namespace HomeData
         {
             QueueEnable = false;
             Log = LogIntern;
+            InitUdp();
+            timerHeartbeat = new System.Timers.Timer(60000);
+            timerHeartbeat.Elapsed += new ElapsedEventHandler(OnTimedEventHeartbeat);
+        }
+
+        private void InitUdp()
+        {
             while (udpClient == null)
             {
                 try
@@ -395,8 +414,6 @@ namespace HomeData
                     clientPort++;
                 }
             }
-            timerHeartbeat = new System.Timers.Timer(60000);
-            timerHeartbeat.Elapsed += new ElapsedEventHandler(OnTimedEventHeartbeat);
         }
 
 
@@ -409,7 +426,7 @@ namespace HomeData
         public bool Open(string gatewayIp)
         {
             this.gatewayIp = gatewayIp;
-
+            //InitUdp();
             try
             {
 
@@ -430,6 +447,7 @@ namespace HomeData
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                Log("Open: " + e.ToString());
             }
 
             // nun den Listener starten
@@ -491,6 +509,7 @@ namespace HomeData
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                Log("Close: " + e.ToString());
             }
             return ConnectionState == KnxConnectionState.disconnected;
         }
@@ -502,27 +521,74 @@ namespace HomeData
         /// Sendet zyklich ein Telegramm an das Gateway dass die Verbindung noch aktiv ist
         internal void Heartbeat()
         {
-            if (ConnectionState != KnxConnectionState.connected)
-            {   // Upps, da stimmt was mit der Verbindung nicht
-                Log("Connection ist im Status:" + ConnectionState.ToString());
-            }
+
             try
             {
-                KnxIpTelegrammGenerator Tele = new KnxIpTelegrammGenerator(this);
-                Tele.SetHeartbeatTelegramm();
-                byte[] TeleBytes = Tele.bytes;
+                if (ConnectionState != KnxConnectionState.connected) // Upps, da stimmt was mit der Verbindung nicht
+                    HandleWrongConnectionState();
 
-               // KnxNetForm
-               Log("H>:" + KnxTools.BytesToString(TeleBytes));
 
-                udpClient.Send(TeleBytes, TeleBytes.Length);
-                ConnectionState = KnxConnectionState.hbReq;
+                if (ConnectionState == KnxConnectionState.connected)
+                {
+                    KnxIpTelegrammGenerator Tele = new KnxIpTelegrammGenerator(this);
+                    Tele.SetHeartbeatTelegramm();
+                    byte[] TeleBytes = Tele.bytes;
+
+                    // KnxNetForm
+                    Log("H>:" + KnxTools.BytesToString(TeleBytes));
+
+                    udpClient.Send(TeleBytes, TeleBytes.Length);
+                    ConnectionState = KnxConnectionState.hbReq;
+                }
+                else
+                {
+                    Log("Heartbeat: State =" + ConnectionState.ToString());
+                }
+
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                Log("Heartbeat: " + e.ToString());
             }
             return ;
+        }
+
+
+        private void HandleWrongConnectionState()
+        {
+            // zuerst pingen ob KnxGateway noch erreichbar
+            if (!pingOk())
+            {
+                Log("KNXGateway " + gatewayIp + " kann nicht erreicht werden (ping)");
+                Info("KNXGateway " + gatewayIp + " kann nicht erreicht werden (ping)");
+                // dann können wir nur warten ob dies beim nächsten Heartbeat besser ist
+                return;
+            }
+
+            if (ConnectionState == KnxConnectionState.connected)
+            {
+                //Ist doch alles ok
+                return;
+            }
+
+            if (ConnectionState != KnxConnectionState.connected)
+            {
+                // der letzte Heartbeat-Request wurde nicht beantwortet
+                Log("Connection ist im Status:" + ConnectionState.ToString());
+                // versuchen die Connection neu zu öffnen
+                Log("Connection wird neu aufgebaut");
+                Info("Connection ist im Status:" + ConnectionState.ToString() + "  Connection wird neu aufgebaut");
+                
+                Open(this.gatewayIp);
+            }
+        }
+
+        private bool pingOk()
+        {
+            Ping pingSender = new Ping();
+            PingReply reply = pingSender.Send(gatewayIp);
+            return (reply.Status == IPStatus.Success);
         }
 
 
@@ -543,6 +609,7 @@ namespace HomeData
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                Log("DataAck: " + e.ToString());
             }
             return;
         }
@@ -568,6 +635,7 @@ namespace HomeData
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                Log("Send: " + e.ToString());
             }
             return ;
         }
@@ -701,6 +769,7 @@ namespace HomeData
             {
 
                 Console.WriteLine(ex.ToString());
+                Log("ReceiveCallback: " + e.ToString());
             }
         }
 
