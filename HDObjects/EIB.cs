@@ -12,7 +12,7 @@ namespace EIBDef
 {
     public enum EIB_Adress_Typ  {PhysAdr,GroupAdr};
     public enum APCI_Typ { Request, Answer, Send, unnown };
-    public enum EIS_Typ { unknown, EIS1, EIS2, EIS3, EIS4, EIS5, EIS6, EIS7, EIS8, EIS9, EIS10, EIS11 };
+    public enum EIS_Typ { unknown, EIS1, EIS2, EIS3, EIS4, EIS5, EIS6, EIS7, EIS8, EIS9, EIS10, EIS11, EIS14 };
 
     ///<summary >
     ///Definiert eine EIB-Bus Adresse
@@ -580,6 +580,8 @@ namespace EIBDef
                     return m_DataLen == 3;
                 case EIS_Typ.EIS11:
                     return m_DataLen == 5;
+                case EIS_Typ.EIS14:
+                    return m_DataLen == 2;
                 default:
                     return false;
             }

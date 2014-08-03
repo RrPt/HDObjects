@@ -191,6 +191,8 @@ namespace HomeData
             {
                 case 1: erg = erg + "  EIS1=" + Eis1.ToString().PadRight(7);
                     break;
+                case 2: erg = erg + "  EIS14=" + Eis14.ToString().PadRight(7);
+                    break;
                 case 3: erg = erg + "  EIS5=" + Eis5.ToString().PadRight(7);
                     break;
                 case 4: erg = erg + "  EIS3=" + Eis3.ToString("H:m:s").PadRight(7);
@@ -435,6 +437,29 @@ namespace HomeData
         }
 
 
+        // Abfrage der Daten in EIS14-Darstellung (byte)
+        public byte Eis14
+        {
+            get
+            {
+                if (m_DataLen != 2)
+                {  // keine EIS14
+                    //throw new Exception("Kein EIS14-Datenformat");
+                    //L.err("Kein EIS14-Datenformat");
+                    return m_value[1];
+                }
+                return m_value[1];
+            }
+            set
+            {
+                m_DataLen = 2;
+                m_value = new byte[m_DataLen];
+                m_value[0] = 0;
+                m_value[1] = value;
+            }
+        }
+
+
         public int DataLen 
         {
             get
@@ -476,6 +501,8 @@ namespace HomeData
                     return m_DataLen == 3;
                 case EIS_Typ.EIS11:
                     return m_DataLen == 5;
+                case EIS_Typ.EIS14:
+                    return m_DataLen == 2;
                 default:
                     return false;
             }

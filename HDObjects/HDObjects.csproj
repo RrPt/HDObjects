@@ -40,6 +40,7 @@
     <Compile Include="EIB.cs" />
     <Compile Include="EIS1.cs" />
     <Compile Include="EIS11.cs" />
+    <Compile Include="EIS14.cs" />
     <Compile Include="EIS3.cs" />
     <Compile Include="EIS5.cs" />
     <Compile Include="HDKnx.cs" />

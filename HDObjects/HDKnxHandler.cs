@@ -140,6 +140,9 @@ namespace HomeData
                 case 1:
                     hdKnx = new EIS1(emi);
                     break;
+                case 2:
+                    hdKnx = new EIS14(emi);
+                    break;
                 case 3:
                     hdKnx = new EIS5(emi);
                     break;
