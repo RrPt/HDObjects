@@ -96,6 +96,18 @@ namespace HomeData
             Eis1 = flag;
         }
 
+        /// <summary>
+        /// Konstruktoe für EIS2 (Dim)
+        /// </summary>
+        /// <param name="eIB_Adress"></param>
+        /// <param name="flag"></param>
+        public cEMI(EIB_Adress eIB_Adress, byte val)
+        {
+            this.m_destination = eIB_Adress;
+            m_APCI = APCI_Typ.Send;
+            Eis2 = val;
+        }
+
 
         /// <summary>
         /// Konstruktor for EIS3 (Zeit)
@@ -189,7 +201,7 @@ namespace HomeData
             erg = erg + DataToString();
             switch (m_DataLen)
             {
-                case 1: erg = erg + "  EIS1=" + Eis1.ToString().PadRight(7);
+                case 1: erg = erg + "  EIS1=" + Eis1.ToString().PadRight(7) + "  EIS2=" + Eis2.ToString().PadRight(7);
                     break;
                 case 2: erg = erg + "  EIS14=" + Eis14.ToString().PadRight(7);
                     break;
@@ -288,6 +300,29 @@ namespace HomeData
                     m_value[0] = (byte)( m_value[0] & (byte)0xf0);
             }
         }
+
+
+        // Abfrage der Daten in EIS2-Darstellung (bool)
+        public byte Eis2
+        {
+            get
+            {
+                if (m_DataLen != 1)
+                {  // keine EIS2
+                    //throw new Exception("Kein EIS1-Datenformat");
+                    //L.err("Kein EIS1-Datenformat");
+                    return 0;
+                }
+                return m_value[0] ;
+            }
+            set
+            {
+                m_DataLen = 1;
+                m_value = new byte[m_DataLen];
+                m_value[0] = value ;
+            }
+        }
+
 
         // Abfrage der Daten in  EIS3-Darstellung (Zeit -> DateTime)
         public DateTime Eis3
