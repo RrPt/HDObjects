@@ -393,7 +393,8 @@ namespace HomeData
             QueueEnable = false;
             Log = LogIntern;
             InitUdp();
-            timerHeartbeat = new System.Timers.Timer(60000);
+            timerHeartbeat = new System.Timers.Timer(10000);
+            Log("Heartbeat auf " + timerHeartbeat.Interval/1000 + " sbyte gesetzt");
             timerHeartbeat.Elapsed += new ElapsedEventHandler(OnTimedEventHeartbeat);
         }
 
