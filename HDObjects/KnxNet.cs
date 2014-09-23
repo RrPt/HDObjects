@@ -299,7 +299,22 @@ namespace HomeData
         DataChangedDelegate dataChanged = null;
 
         byte SeqCounter = 0;
+
+        // Heartbearintervall in s
+        private int _HeartbeatInterval = 10;
+
+        public int HeartbeatInterval
+        {
+            get { return _HeartbeatInterval; }
+            set 
+            {
+                _HeartbeatInterval = value;
+                timerHeartbeat.Interval = 1000 * _HeartbeatInterval;
+                Info("Heartbeat auf " + _HeartbeatInterval + "s gesetzt");
+            }
+        }
         
+
 
         /// <summary>
         /// Setzt die Funktion, an die Logausgaben übergeben werden sollen
