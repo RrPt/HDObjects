@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Xml;
 using Knx;
+using HDObjects;
 
 namespace HomeData
 {
@@ -72,7 +73,7 @@ namespace HomeData
             }
             catch (Exception eX)
             {
-                Console.WriteLine(eX);
+                HDDebug.WriteLine(eX.ToString());
             }
 
         }
@@ -111,7 +112,7 @@ namespace HomeData
             catch (FileNotFoundException fnfeX)
             {
                 list = null;
-                Console.WriteLine(fnfeX.ToString());
+                HDDebug.WriteLine(fnfeX.ToString());
                 return ;
             }
             finally
