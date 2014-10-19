@@ -37,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="cEMI.cs" />
+    <Compile Include="Debug.cs" />
     <Compile Include="EIB.cs" />
     <Compile Include="EIS1.cs" />
     <Compile Include="EIS11.cs" />

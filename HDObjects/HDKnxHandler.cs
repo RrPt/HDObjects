@@ -27,7 +27,7 @@ namespace HomeData
         public String name = "nix";
         public String EibAdress = "0/0/0";
         public String EisName = null;
-        public String Typ = "Leistung";
+        public String Typ = "?";
         public String unit = "?";
     }
 
@@ -59,7 +59,7 @@ namespace HomeData
                 p.name = hdKnx.name;
                 p.EisName = hdKnx.GetType().ToString();
                 //@todo xxx p.Typ = hdKnx.GetType();
-                p.unit = "W";
+                p.unit = hdKnx.unit;
                 p.EibAdress = hdKnx.destAdr.ToString();
                 list.list.Add(p);
             }
@@ -124,6 +124,80 @@ namespace HomeData
             }
         }
 
+        public static void ReadParametersFromEsfFile(string esfFileName)
+        {
+            FileStream fs = null;
+            try
+            {
+                fs = new FileStream(esfFileName, FileMode.Open);
+                if (fs == null) return ;
+                StreamReader reader = new StreamReader(fs);
+                String line;
+                String teil;
+                int pos;
+                // Read  lines from the file until the end of 
+                // the file is reached.
+                while ((line = reader.ReadLine()) != null)
+                {
+                    Console.WriteLine(line);
+
+                    try
+                    {
+                        String[] mainArray = line.Split(new char[] { '\t' });
+                        String[] adrArray = mainArray[0].Split(new char[] { '.' });
+
+                        String typ = mainArray[2];
+                         Type ttt = null;
+                        if (typ.StartsWith("EIS 1"))  ttt = Type.GetType("Knx.EIS1");
+                        else if (typ.StartsWith("Uncertain (1 Byte)")) ttt = Type.GetType("Knx.EIS1");  // sollte in ETS gepflegt werden
+                        else if (typ.StartsWith("EIS 2")) ttt = Type.GetType("Knx.EIS1");  //xxx  da es eis2 noch nicht gibt!
+                        else if (typ.StartsWith("Uncertain (2 Byte)")) ttt = Type.GetType("Knx.EIS5");  // sollte in ETS gepflegt werden
+                        else if (typ.StartsWith("Uncertain (3 Byte)")) ttt = Type.GetType("Knx.EIS3");  // sollte in ETS gepflegt werden
+                        else if (typ.StartsWith("EIS 3)")) ttt = Type.GetType("Knx.EIS3");  // Zeit
+                        else if (typ.StartsWith("EIS 4)")) ttt = Type.GetType("Knx.EIS4");  // Datum
+                        else
+                        {
+                            Console.WriteLine(typ);
+                        }
+
+                        HDKnx o = (HDKnx)Activator.CreateInstance(ttt);
+
+                        o.name = mainArray[1];
+                        o.destAdr = new EIB_Adress(adrArray[2]);
+                        o.unit = "?";
+                        
+
+                        if (!hdKnxObjList.ContainsKey(o.destAdr))
+                        {
+                            hdKnxObjList.Add(o.destAdr, o);
+                        }
+
+
+
+                    }
+                    catch (Exception)
+                    {
+                        
+                        Console.WriteLine("Fehler in " + line);
+                    }
+                }
+
+
+                return ;
+            }
+            catch (FileNotFoundException fnfeX)
+            {
+                Console.WriteLine(fnfeX.ToString());
+                return ;
+            }
+            finally
+            {
+                if (fs != null)
+                {
+                    fs.Close();
+                }
+            }
+        }
 
 
 

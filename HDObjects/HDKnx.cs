@@ -10,7 +10,7 @@ namespace HomeData
     {
         private EIB_Adress m_destAdr;
         protected EIS_Typ eisTyp = EIS_Typ.unknown;
-        private cEMI emi;
+        public cEMI emi;
 
         public HDKnx()
         {
@@ -53,7 +53,7 @@ namespace HomeData
 
         public override String ToString()
         {
-            String erg = time +": " + name + " [" + m_destAdr.ToString().PadRight(7) + "] " + DataToString();
+            String erg = time +": [" + m_destAdr.ToString().PadRight(7) + "] " + name.PadRight(45) + " " +DataToString().PadRight(10);
             return erg;
 
         }
