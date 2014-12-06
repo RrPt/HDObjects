@@ -58,7 +58,7 @@ namespace HomeData
                 XmlEibItem p = new XmlEibItem();
                 p.name = hdKnx.name;
                 p.EisName = hdKnx.GetType().ToString();
-                //@todo xxx p.Typ = hdKnx.GetType();
+                // todo xxx p.Typ = hdKnx.GetType();
                 p.unit = hdKnx.unit;
                 p.EibAdress = hdKnx.destAdr.ToString();
                 list.list.Add(p);
@@ -150,7 +150,7 @@ namespace HomeData
                          Type ttt = null;
                         if (typ.StartsWith("EIS 1"))  ttt = Type.GetType("Knx.EIS1");
                         else if (typ.StartsWith("Uncertain (1 Byte)")) ttt = Type.GetType("Knx.EIS1");  // sollte in ETS gepflegt werden
-                        else if (typ.StartsWith("EIS 2")) ttt = Type.GetType("Knx.EIS1");  //xxx  da es eis2 noch nicht gibt!
+                        else if (typ.StartsWith("EIS 2")) ttt = Type.GetType("Knx.EIS1");  // todo xxx  da es eis2 noch nicht gibt!
                         else if (typ.StartsWith("Uncertain (2 Byte)")) ttt = Type.GetType("Knx.EIS5");  // sollte in ETS gepflegt werden
                         else if (typ.StartsWith("Uncertain (3 Byte)")) ttt = Type.GetType("Knx.EIS3");  // sollte in ETS gepflegt werden
                         else if (typ.StartsWith("EIS 3)")) ttt = Type.GetType("Knx.EIS3");  // Zeit

@@ -39,6 +39,13 @@ namespace HomeData
 
         public byte[] rawValue { get; set; }
 
+
+        public byte[] getHDTelegramm()
+        {
+            // todo  muss noch implementiert werden
+
+        }
+
         // Ausgabe der Rohdaten als String
         private String DataToString()
         {
