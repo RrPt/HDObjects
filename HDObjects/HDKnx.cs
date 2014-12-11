@@ -43,26 +43,42 @@ namespace HomeData
         public byte[] getHDTelegramm()
         {
             // todo  muss noch implementiert werden
-
+            return null;
         }
 
         // Ausgabe der Rohdaten als String
         private String DataToString()
         {
             String erg = "";
-            for (ushort i = 0; i < rawValue.Length; i++)
+            try
             {
-                erg += rawValue[i].ToString() + " ";
+                for (ushort i = 0; i < rawValue.Length; i++)
+                {
+                    erg += rawValue[i].ToString() + " ";
+                }
+                return erg;
             }
-            return erg;
+            catch (Exception)
+            {
+
+                return "<null>";
+            }
         }
 
 
         public override String ToString()
         {
-            String erg = time +": [" + m_destAdr.ToString().PadRight(7) + "] " + name.PadRight(45) + " " +DataToString().PadRight(10);
-            return erg;
+            try
+            {
+                String erg = time + ": [" + m_destAdr.ToString().PadRight(7) + "] " + name.PadRight(45) + " " + DataToString().PadRight(10);
+                return erg;
 
+            }
+            catch (Exception e)
+            {
+
+                return "no info";
+            }
         }
 
         /// <summary>
