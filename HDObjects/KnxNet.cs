@@ -766,7 +766,7 @@ namespace HomeData
                         HDKnx hdKnx = HDKnxHandler.GetObject(emi);
                         // und dort den Wert setzen, falls erforderlich
                         hdKnx.SetValue(emi);
-                        hdKnx.emi = emi; //.SetValue(emi);
+                        hdKnx.emi = emi; 
 
                         // Rohdaten melden falls gewünscht
                         if (rawTelegramReceived != null)
