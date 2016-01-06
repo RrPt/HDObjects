@@ -680,7 +680,7 @@ namespace HomeData
             IPEndPoint e = new IPEndPoint(IPAddress.Any, 0);
             Byte[] receiveBytes =  udpClient.EndReceive(ar, ref e);
             Anz++;
-            HDDebug.WriteLine("Telegr[" + Anz + "]=" + KnxTools.BytesToString(receiveBytes));
+            HDDebug.WriteLine("Empf: Telegr[" + Anz + "]=" + KnxTools.BytesToString(receiveBytes));
             int AnzBytes = receiveBytes.Length;
             if (AnzBytes < 7)
             {

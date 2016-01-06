@@ -9,20 +9,20 @@ namespace HomeData
         public String name { get; set; }
         public DateTime time { get; set; }
         public String unit { get; set; }
-        private HdAdr sourceAdr;
-        private HdAdr destAdr;
+        //private HdAdr sourceAdr;
+        //private HdAdr destAdr;
 
-        public HdAdr SourceAdr
-        {
-            get { return sourceAdr; }
-            set { sourceAdr = value; }
-        }
+        //public HdAdr SourceAdr
+        //{
+        //    get { return sourceAdr; }
+        //    set { sourceAdr = value; }
+        //}
 
-        public HdAdr DestAdr
-        {
-            get { return destAdr; }
-            set { destAdr = value; }
-        }
+        //public HdAdr DestAdr
+        //{
+        //    get { return destAdr; }
+        //    set { destAdr = value; }
+        //}
         
 
 
