@@ -96,6 +96,16 @@ namespace HomeData
             Eis1 = flag;
         }
 
+
+        public cEMI(EIB_Telegramm tele)
+        {
+            this.m_destination = tele.DestAdr;
+            this.m_APCI = tele.apci;
+            this.m_source = tele.SourceAdr;
+            m_value = tele.RawData;
+            m_DataLen = tele.DataLen;
+        }
+
         /// <summary>
         /// Konstruktoe für EIS2 (Dim)
         /// </summary>
@@ -193,6 +203,10 @@ namespace HomeData
 
             return tmp;
         }
+
+
+
+      
 
         // Ausgabe als String
         public override string ToString()
@@ -542,6 +556,8 @@ namespace HomeData
                     return false;
             }
         }
+
+        
 
 
         internal byte[] GetRawData()

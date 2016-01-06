@@ -7,12 +7,286 @@ using System.IO;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using HomeData;
 
 namespace EIBDef
 {
     public enum EIB_Adress_Typ  {PhysAdr,GroupAdr};
     public enum APCI_Typ { Request, Answer, Send, unnown };
     public enum EIS_Typ { unknown, EIS1, EIS2, EIS3, EIS4, EIS5, EIS6, EIS7, EIS8, EIS9, EIS10, EIS11, EIS14 };
+
+
+    /// <summary>
+    /// Namen der EIB-Adressen
+    /// </summary>
+   public enum EIB_Adress_Name
+    {
+        /////////////////////////////////
+        // Hauptgruppe 0 = Fensterkontakte   //
+        /////////////////////////////////
+        // Mittelgruppe 0 = Untergeschoss
+        GA_F_HAR = 0x0001,
+        GA_F_AZ = 0x0002,
+        GA_F_KE = 0x0003,
+        GA_F_V = 0x0004,
+        GA_E_HAR = 0x0006,
+        GA_E_V1 = 0x0007,
+        GA_E_V2 = 0x0008,
+        GA_E_AZ = 0x0009,
+        GA_AZ_RES2 = 0x000A,
+        GA_AZ_RES3 = 0x000B,
+
+        // Mittelgruppe 1 = Erdgeschoss
+        GA_F_WZV = 0x0101,
+        GA_F_WZH = 0x0102,
+        GA_F_KU = 0x0103,
+        GA_F_D = 0x0104,
+        GA_F_WC = 0x0105,
+        GA_T_Haustuer = 0x0106,
+        GA_T_Schloss = 0x0107,
+        GA_E_WZ1 = 0x0108,
+        GA_E_WZ2 = 0x0109,
+        GA_E_WZ3 = 0x010A,
+        GA_Z_BEW_TER = 0x010B,
+        GA_E_WZ5 = 0x010C,
+
+        // Mittelgruppe 2 = Obergeschoss
+        GA_F_BAD = 0x0201,
+        GA_F_SA = 0x0202,
+        GA_F_PA = 0x0203,
+        GA_F_SZ = 0x0204,
+        GA_E_PA1 = 0x0205,
+        GA_E_PA2 = 0x0206,
+        GA_E_SA1 = 0x0207,
+        GA_E_SA2 = 0x0208,
+        // Mittelgruppe 3..7 undefiniert
+
+        /////////////////////////////////
+        // Hauptgruppe 1 = Rolladen    //
+        /////////////////////////////////
+        // Mittelgruppe 0 = Untergeschoss
+        GA_R_AZ = 0x0801,
+        GA_R_AZ_S = 0x080B,
+        GA_R_AZ_G = 0x0815,
+        // Mittelgruppe 1 = Erdgeschoss
+        GA_R_WZH_A = 0x0901,
+        GA_R_WZV_A = 0x0902,
+        GA_R_KU_A = 0x0903,
+        GA_R_MA_A = 0x0904,
+        GA_R_ALLE_A = 0x0905,
+        GA_R_WZH_S = 0x090B,
+        GA_R_WZV_S = 0x090C,
+        GA_R_KU_S = 0x090D,
+        GA_R_MA_S = 0x090E,
+        GA_R_ALLE_S = 0x090F,
+        GA_R_WZH_G = 0x0915,
+        GA_R_WZV_G = 0x0916,
+        GA_R_KU_G = 0x0917,
+        GA_R_MA_G = 0x0918,
+        // Mittelgruppe 2 = Obergeschoss
+        // Mittelgruppe 3..7 undefiniert
+
+        /////////////////////////////////
+        // Hauptgruppe 2 = Strom+Licht //
+        /////////////////////////////////
+        // Mittelgruppe 0 = Untergeschoss
+        GA_Dim3_K1_Schalten = 0x1029,  // 
+        GA_Dim3_K2_Schalten = 0x102A,  // 
+        GA_Dim3_K1_Dimmen = 0x102B,  // 
+        GA_Dim3_K2_Dimmen = 0x102C,  // 
+        GA_Dim3_K1_Helligkeit = 0x102D,  // 
+        GA_Dim3_K2_Helligkeit = 0x102E,  // 
+        GA_Dim3_K1_Rueckmeldung = 0x102F,  // 
+        GA_Dim3_K2_Rueckmeldung = 0x1030,  // 
+        GA_Dim3_K1_Wertrueckmeldung = 0x1031,  // 
+        GA_Dim3_K2_Wertrueckmeldung = 0x1032,  // 
+        GA_Dim3_K1_Ueberlast = 0x1033,  // 
+        GA_Dim3_K2_Ueberlast = 0x1034,  // 
+        GA_Dim3_K1_Spannungsausfall = 0x1035,  // 
+        GA_Dim3_K2_Spannungsausfall = 0x1036,  // 
+
+
+
+        // Mittelgruppe 1 = Erdgeschoss
+        GA_L_TE = 0x1101,
+        GA_S_TE = 0x1102,
+        GA_Z_WASSER_V = 0x1103,
+        GA_Z_KLINGEL = 0x1104,
+        GA_L_TE_F = 0x1115,
+        GA_S_TE_F = 0x1116,
+        GA_Z_WASSER_F = 0x1117,
+        GA_Z_KLINGEL_F = 0x1118,
+
+        GA_L_WZH_E = 0x111F,  // 
+        GA_L_WZV_E = 0x1120,  // 
+        GA_L_WZH_D = 0x1121,  // 
+        GA_L_WZV_D = 0x1122,  // 
+        GA_L_WZH_H = 0x1123,  // 
+        GA_L_WZV_H = 0x1124,  // 
+        GA_L_WZH_R = 0x1125,  // 
+        GA_L_WZV_R = 0x1126,  // 
+        GA_L_WZH_W = 0x1127,  // 
+        GA_L_WZV_W = 0x1128,  // 
+
+
+        GA_L_WZ_LZ1 = 0x1151,
+        GA_L_WZ_LZ2 = 0x1152,
+
+        // Mittelgruppe 2 = Obergeschoss
+        GA_L_SZ_BETT = 0x1201,  // 
+        GA_L_SZ_SCHRANK = 0x1202,  // 
+        GA_L_SZ_BETT_R = 0x1203,  // 
+        GA_L_SZ_SCHRANK_R = 0x1204,  // 
+
+        GA_Dim2_K1_Schalten = 0x1229,  // 
+        GA_Dim2_K2_Schalten = 0x122A,  // 
+        GA_Dim2_K1_Dimmen = 0x122B,  // 
+        GA_Dim2_K2_Dimmen = 0x122C,  // 
+        GA_Dim2_K1_Helligkeit = 0x122D,  // 
+        GA_Dim2_K2_Helligkeit = 0x122E,  // 
+        GA_Dim2_K1_Rueckmeldung = 0x122F,  // 
+        GA_Dim2_K2_Rueckmeldung = 0x1230,  // 
+        GA_Dim2_K1_Wertrueckmeldung = 0x1231,  // 
+        GA_Dim2_K2_Wertrueckmeldung = 0x1232,  // 
+        GA_Dim2_K1_Ueberlast = 0x1233,  // 
+        GA_Dim2_K2_Ueberlast = 0x1234,  // 
+        GA_Dim2_K1_Spannungsausfall = 0x1235,  // 
+        GA_Dim2_K2_Spannungsausfall = 0x1236,  // 
+
+
+
+        // Mittelgruppe 3 = Relais
+        GA_Z_Tueroeffner = 0x1301,
+        GA_L_Eingang = 0x1302,
+        GA_Z_Luefter = 0x1303,
+        GA_Z_WASSER_H = 0x1304,
+        GA_Z_HEBEFIX = 0x1305,
+        GA_E_RELAIS6 = 0x1306,
+        GA_Z_Zirkulationspumpe = 0x1307,
+        GA_S_TUER = 0x1308,
+
+        // Mittelgruppe 4 = Taster
+        GA_L_K2_Schalter = 0x1401,
+        //GA_Z_EING1_2 = 0x1402,
+        //GA_Z_EING1_3 = 0x1403,
+        //GA_Z_EING1_4 = 0x1404,
+        //GA_Z_EING1_5 = 0x1405,
+        //GA_Z_EING1_6 = 0x1406,
+        //GA_Z_EING1_7 = 0x1407,
+        //GA_Z_EING1_8 = 0x1408,
+
+        // Mittelgruppe 4..6 undefiniert
+        // Mittelgruppe 7 Allgemein
+
+        /////////////////////////////////
+        // Hauptgruppe 3 = Infomelder  //
+        /////////////////////////////////
+        // Mittelgruppe 0 = Untergeschoss
+        // Mittelgruppe 1 = Erdgeschoss
+        // Mittelgruppe 2 = Obergeschoss
+        // Mittelgruppe 3 = Sonstiges
+        GA_L_SZ_LED_GE = 0x1B01,
+        GA_L_SZ_LED_BL = 0x1B02,
+        GA_L_SZ_LED_RT = 0x1B03,
+        GA_L_SZ_LED_GN = 0x1B04,
+        // Mittelgruppe 4..7 undefiniert
+
+        /////////////////////////////////
+        // Hauptgruppe 4 = Sonstiges   //
+        /////////////////////////////////
+        GA_Z_CControl_Start = 0x2000,
+        GA_Z_ZEIT = 0x2001,
+        GA_Z_WASSERALARM = 0x2002,
+        GA_Z_HELLIGKEITS_Schwelle = 0x2005,
+        GA_Z_BEW_TUER = 0x2006,
+        GA_Z_PIEPER = 0x2007,
+        GA_Z_SUMMER = 0x2008,
+        GA_Z_TEMP_GS = 0x2009,
+        GA_Z_PIEPER_BEF = 0x200B,
+
+        GA_E_DI1 = 0x2102,
+        GA_E_DI2 = 0x2103,
+        GA_E_DI3 = 0x2104,
+
+        GA_I_FBTEST1 = 0x2401,
+        GA_I_FBTEST2 = 0x2402,
+        GA_I_FBTEST3 = 0x2403,
+        GA_I_FBTEST4 = 0x2404,
+        GA_I_FBTEST5 = 0x2405,
+        GA_I_FBTEST6 = 0x2406,
+        GA_I_FBTEST7 = 0x2407,
+        GA_I_FBTEST8 = 0x2408,
+
+        ///////////////////////////////////
+        // Hauptgruppe 5 =  Messungen //
+        ///////////////////////////////////
+        // Mittelgruppe 0 = Leistung
+        GA_P_ZAEHLER = 0x2800,
+        GA_P_HERD1 = 0x2801,
+        GA_P_HERD2 = 0x2802,
+        GA_P_HERD3 = 0x2803,
+        GA_P_SPM = 0x2804,
+        GA_P_KUECHE = 0x2805,
+        GA_P_TREPPE = 0x2806,
+        GA_P_DIELE = 0x2807,
+        GA_P_PV = 0x2808,
+        GA_P_TREPPE_UG = 0x2809,
+        GA_P_SZ = 0x280A,
+        GA_P_WZ = 0x280B,
+        GA_P_BAD = 0x280C,
+        GA_P_FLUR_OG = 0x280D,
+        GA_P_PASCAL = 0x280E,
+        GA_P_SANDRA = 0x280F,
+        GA_P_AZ = 0x2810,
+        GA_P_KE = 0x2811,
+        GA_P_HAR = 0x2812,
+        GA_P_HEIZUNG = 0x2813,
+        GA_P_WM = 0x2814,
+        GA_P_HAR_STECKDOSEN = 0x2815,
+        GA_P_ROLLADEN = 0x2816,
+        GA_P_EIB = 0x2817,
+        GA_P_KUEHLGERAETE = 0x2818,
+
+        GA_P_ZAEHLERSTAND = 0x2864,
+        GA_P_SET_ZAEHLERSTAND = 0x2865,
+
+        // Mittelgruppe 1 = Umweltsensoren
+        GA_Z_Aussentemp = 0x2901,
+        GA_Z_Helligkeit = 0x2902,
+
+
+        // Mittelgruppe 2 = Sensoren
+        GA_Z_WM_Schalter = 0x2A00,
+        GA_Z_PV_Error = 0x2A01,
+        GA_Z_PV_ok = 0x2A02,
+        GA_Z_PV_R1 = 0x2A0B,
+        GA_Z_PV_R2 = 0x2A0C,
+        GA_Z_PV_R3 = 0x2A0D,
+        GA_Z_PV_R4 = 0x2A0E,
+
+        // Mittelgruppe 3 = Temperaturen
+        GA_Z_TEMP1 = 0x2B01,
+        GA_Z_TEMP2 = 0x2B02,
+        GA_Z_TEMP3 = 0x2B03,
+        GA_Z_TEMP4 = 0x2B04,
+        GA_Z_TEMP5 = 0x2B05,
+        GA_Z_TEMP6 = 0x2B06,
+
+
+        /////////////////////////////////
+        // Hauptgruppe 6 = ??? //
+        /////////////////////////////////
+
+        /////////////////////////////////
+        // Hauptgruppe 7 = Debugging   //
+        /////////////////////////////////
+        // Mittelgruppe 0 - 6
+        // Mittelgruppe 7 = Dimmer
+        GA_Z_RESTART_DIMMER = 0x6f01
+
+
+    };
+
 
     ///<summary >
     ///Definiert eine EIB-Bus Adresse
@@ -53,6 +327,15 @@ namespace EIBDef
             EIB_Adress adr = EIB_Adress.Parse(EibAdrString);
             m_Adr = adr.m_Adr;
             m_Typ = adr.m_Typ;
+        }
+
+        public EIB_Adress(EIB_Adress_Name name)
+        {
+            int GA = (int)name;
+            if (GA > MAX_ADR) throw new Exception("Gruppenadresse zu gross");
+            if (GA < MIN_ADR) throw new Exception("Gruppenadresse darf nicht negativ sein");
+            m_Adr = (ushort)GA;
+            m_Typ = EIB_Adress_Typ.GroupAdr;
         }
 
         public static EIB_Adress Parse(string EibAdrString)
@@ -133,6 +416,15 @@ namespace EIBDef
             {
                 m_Adr = value;
                 m_Typ = EIB_Adress_Typ.PhysAdr;
+            }
+        }
+
+        // Adr als ushort abfragen
+        public ushort Adr
+        {
+            get
+            {
+                return m_Adr;
             }
         }
 
@@ -233,6 +525,13 @@ namespace EIBDef
             m_Adr = (ushort)(( Bereich << 12) + (Linie << 8) + Teilnehmer);
             m_Typ = EIB_Adress_Typ.PhysAdr;
             return m_Adr;
+        }
+
+
+        public String GetName()
+        {
+            EIB_Adress_Name en = (EIB_Adress_Name)m_Adr;
+            return en.ToString();
         }
 
         // Ausgabe als String
@@ -356,6 +655,18 @@ namespace EIBDef
             Eis5 = value;
         }
 
+        public EIB_Telegramm(HDKnx hdKnx)
+        {
+            m_ReceiveTime = hdKnx.time;
+            m_source = hdKnx.emi.sourceAdr;// new EIB_Adress(EIB_Phys_Source_Adr, EIB_Adress_Typ.PhysAdr);
+            m_destination = hdKnx.destAdr;
+            m_APCI = hdKnx.emi.APCI;
+
+            m_value = hdKnx.rawValue;
+            m_DataLen = hdKnx.emi.DataLen;
+           
+        }
+
 
         // Quelladr abfragen
         public EIB_Adress SourceAdr
@@ -383,6 +694,14 @@ namespace EIBDef
             get
             {
                 return m_DataLen;
+            }
+        }
+
+        public byte[] RawData
+        {
+            get
+            {
+                return m_value;
             }
         }
 
@@ -497,6 +816,18 @@ namespace EIBDef
                 } 
                 return erg;
             }
+            set
+            {
+               
+            
+                m_DataLen = 4;
+                m_value = new byte[4];
+                m_value[0] = 0;
+                m_value[1] = (byte)value.Day;
+                m_value[2] = (byte)value.Month;
+                m_value[3] = (byte)(value.Year-2000);
+            
+            }
         }
 
 
@@ -550,6 +881,54 @@ namespace EIBDef
             }
 
         }
+
+        // Abfrage der Daten in  EIS6-Darstellung (Datum -> DateTime)
+        public byte Eis6
+        {
+            get
+            {
+                byte erg;
+                if (m_DataLen != 2)
+                {   // keine EIS6
+                    throw new Exception("Kein EIS6-Datenformat");
+                }
+
+                try
+                {
+                    erg = m_value[1];
+
+                }
+                catch (Exception)
+                {
+                    erg = 0;
+                }
+                return erg;
+            }
+            set
+            {
+                m_DataLen = 2;
+                m_value = new byte[2];
+                m_value[0] = 0;
+                m_value[1] = value;
+            }
+
+        }
+
+
+        // Abfrage der Daten in allen EIS-Darstellung
+        public float Wert
+        {
+            get
+            {
+                if (m_DataLen == 1) return (float)(Eis1 ? 1.0 : 0.0);
+                if (m_DataLen == 2) return (float)Eis6;
+                if (m_DataLen == 3) return (float)Eis5;
+                if (m_DataLen == 4) return (float)Eis3.TimeOfDay.TotalSeconds;
+                if (m_DataLen == 5) return (float)Eis11;
+                return -1;
+            }
+        }
+
 
 
         // Umwandlung der EIS11-Darstellung in eine uint und umgekehrt
