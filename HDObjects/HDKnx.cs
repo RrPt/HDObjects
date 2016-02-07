@@ -74,7 +74,7 @@ namespace HomeData
                 return erg;
 
             }
-            catch (Exception e)
+            catch (Exception )
             {
 
                 return "no info";
