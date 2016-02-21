@@ -655,6 +655,17 @@ namespace EIBDef
             Eis5 = value;
         }
 
+        // Konstruktor für EIS11: uint
+        public EIB_Telegramm(EIB_Adress DestinationAdr, uint value, APCI_Typ apci)
+        {
+            m_ReceiveTime = DateTime.Now;
+            m_source = new EIB_Adress(EIB_Phys_Source_Adr, EIB_Adress_Typ.PhysAdr);
+            m_destination = DestinationAdr;
+            m_APCI = apci;
+            Eis11 = value;
+        }
+
+
         public EIB_Telegramm(HDKnx hdKnx)
         {
             m_ReceiveTime = hdKnx.time;
@@ -938,6 +949,18 @@ namespace EIBDef
             {
                 if (m_DataLen != 5) return 0;         // keine EIS11
                 return (uint)(m_value[1] * (1 << 24) + m_value[2] * (1 << 16) + m_value[3] * (1 << 8) + m_value[4]);
+            }
+            set
+            {
+                m_DataLen = 5;
+                m_value = new byte[m_DataLen];
+
+                m_value[0] = 0;
+                m_value[1] = (byte)((value >> 24) & 0xFF);
+                m_value[2] = (byte)((value >> 16) & 0xFF);
+                m_value[3] = (byte)((value >> 8) & 0xFF);
+                m_value[4] = (byte)((value) & 0xFF);
+
             }
         }
         
