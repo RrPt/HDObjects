@@ -7,7 +7,7 @@ using System.Collections;
 using System.Timers;
 using EIBDef;
 using System.Net.NetworkInformation;
-using HDObjects;
+
 
 
 namespace HomeData
@@ -276,8 +276,8 @@ namespace HomeData
         public int clientPort = 18001;
         public int gatewayPort = 3671;
         public string gatewayIp;
-        public delegate void LoggingDelegate(string Text);
-        public delegate void SendInfoDelegate(string Text);
+        public delegate void MsgDelegate(string Text);
+        //public delegate void InfoDelegate(string Text);
         public delegate void TelegramReceivedDelegate(cEMI emi);
         public delegate void RawTelegramReceivedDelegate(byte[] raw);
         public delegate void DataChangedDelegate(HDKnx hdKnx);
@@ -293,8 +293,10 @@ namespace HomeData
         byte _channelId = 0;
         private static Timer timerHeartbeat;
 
-        LoggingDelegate Log = null;
-        SendInfoDelegate Info = null;
+        MsgDelegate Err = null;
+        MsgDelegate Info = null;
+        MsgDelegate Debug = null;
+
         TelegramReceivedDelegate telegramReceived = null;
         RawTelegramReceivedDelegate rawTelegramReceived = null;
         DataChangedDelegate dataChanged = null;
@@ -311,7 +313,7 @@ namespace HomeData
             {
                 _HeartbeatInterval = value;
                 timerHeartbeat.Interval = 1000 * _HeartbeatInterval;
-                Info("Heartbeat auf " + _HeartbeatInterval + "s gesetzt");
+                Debug("Heartbeat auf " + _HeartbeatInterval + "s gesetzt");
             }
         }
 
@@ -321,10 +323,10 @@ namespace HomeData
         /// Setzt die Funktion, an die Logausgaben übergeben werden sollen
         /// wird keine angegeben so wird LogIntern verwendet
         /// </summary>
-        /// <param name="LogFunction"></param>
-        public void SetLog(LoggingDelegate LogFunction)
+        /// <param name="ErrFunction"></param>
+        public void SetErrFunction(MsgDelegate ErrFunction)
         {
-            Log = LogFunction;
+            Err = ErrFunction;
         }
 
 
@@ -333,9 +335,9 @@ namespace HomeData
         /// wird keine angegeben so wird LogIntern verwendet
         /// </summary>
         /// <param name="LogFunction"></param>
-        public void SetDebugTo(DebuggingDelegate DebugFunction)
+        public void SetDebugFunction(MsgDelegate DebugFunction)
         {
-            HDDebug.DebugTo = DebugFunction;
+            Debug = DebugFunction;
         }
 
         /// <summary>
@@ -343,7 +345,7 @@ namespace HomeData
         /// wird keine angegeben so wird LogIntern verwendet
         /// </summary>
         /// <param name="LogFunction"></param>
-        public void SetInfo(SendInfoDelegate InfoFunction)
+        public void SetInfoFunction(MsgDelegate InfoFunction)
         {
             Info = InfoFunction;
         }
@@ -418,11 +420,13 @@ namespace HomeData
         public KnxNetConnection()
         {
             QueueEnable = false;
-            Log = LogIntern;
-            HDDebug.DebugTo = null;
+            Err = LogIntern;
+            Debug = LogIntern;
+            Info = LogIntern;
+
             InitUdp();
             timerHeartbeat = new System.Timers.Timer(10000);
-            Log("Heartbeat auf " + timerHeartbeat.Interval/1000 + " sbyte gesetzt");
+            Debug("Heartbeat auf " + timerHeartbeat.Interval / 1000 + " sbyte gesetzt");
             timerHeartbeat.Elapsed += new ElapsedEventHandler(OnTimedEventHeartbeat);
         }
 
@@ -434,12 +438,12 @@ namespace HomeData
                 {
 
                     udpClient = new UdpClient(clientPort);
-                    Log("ClientPort " + clientPort + " geöffnet");
+                    Info("ClientPort " + clientPort + " geöffnet");
 
                 }
                 catch (Exception)
                 {
-                    Log("ClientPort " + clientPort + " bereits belegt");
+                    Err("ClientPort " + clientPort + " bereits belegt");
                     clientPort++;
                 }
             }
@@ -467,7 +471,7 @@ namespace HomeData
                 byte[] TeleBytes = Tele.bytes;
 
                 //KnxNetForm.tb_Log.AppendText(Environment.NewLine + "O>:" + KnxTools.BytesToString(TeleBytes));
-                Log("O>:" + KnxTools.BytesToString(TeleBytes));
+                Debug("O>:" + KnxTools.BytesToString(TeleBytes));
 
                 udpClient.Send(TeleBytes,TeleBytes.Length);
                 ConnectionState = KnxConnectionState.conReq;
@@ -475,8 +479,7 @@ namespace HomeData
            }
             catch (Exception e)
             {
-                HDDebug.WriteLine(e.ToString());
-                Log("Open: " + e.ToString());
+                Err("Open: " + e.ToString());
             }
 
             // nun den Listener starten
@@ -511,7 +514,7 @@ namespace HomeData
                 byte[] TeleBytes = Tele.bytes;
 
                 //KnxNetForm.tb_Log.AppendText(Environment.NewLine + "C>:" + KnxTools.BytesToString(TeleBytes));
-                Log("C>:" + KnxTools.BytesToString(TeleBytes));
+                Debug("C>:" + KnxTools.BytesToString(TeleBytes));
 
                 udpClient.Send(TeleBytes, TeleBytes.Length);
                 ConnectionState = KnxConnectionState.disConReq;
@@ -537,8 +540,7 @@ namespace HomeData
             }
             catch (Exception e)
             {
-                HDDebug.WriteLine(e.ToString());
-                Log("Close: " + e.ToString());
+                Err("Close: " + e.ToString());
             }
             return ConnectionState == KnxConnectionState.disconnected;
         }
@@ -564,21 +566,20 @@ namespace HomeData
                     byte[] TeleBytes = Tele.bytes;
 
                     // KnxNetForm
-                    Log("H>:" + KnxTools.BytesToString(TeleBytes));
+                    Debug("H>:" + KnxTools.BytesToString(TeleBytes));
 
                     udpClient.Send(TeleBytes, TeleBytes.Length);
                     ConnectionState = KnxConnectionState.hbReq;
                 }
                 else
                 {
-                    Log("Err: Heartbeat: State =" + ConnectionState.ToString());
+                    Err("Err: Heartbeat: State =" + ConnectionState.ToString());
                 }
 
             }
             catch (Exception e)
             {
-                HDDebug.WriteLine(e.ToString());
-                Log("Err: Heartbeat: " + e.ToString());
+                Err("Err: Heartbeat: " + e.ToString());
             }
             return ;
         }
@@ -589,8 +590,7 @@ namespace HomeData
             // zuerst pingen ob KnxGateway noch erreichbar
             if (!pingOk())
             {
-                Log("Err: KNXGateway " + gatewayIp + " kann nicht erreicht werden (ping)");
-                Info("KNXGateway " + gatewayIp + " kann nicht erreicht werden (ping)");
+                Err("Err: KNXGateway " + gatewayIp + " kann nicht erreicht werden (ping)");
                 // dann können wir nur warten ob dies beim nächsten Heartbeat besser ist
                 return;
             }
@@ -604,10 +604,7 @@ namespace HomeData
             if (ConnectionState != KnxConnectionState.connected)
             {
                 // der letzte Heartbeat-Request wurde nicht beantwortet
-                Log("Err: Connection ist im Status:" + ConnectionState.ToString());
-                // versuchen die Connection neu zu öffnen
-                Log("Err: Connection wird neu aufgebaut");
-                Info("Connection ist im Status:" + ConnectionState.ToString() + "  Connection wird neu aufgebaut");
+                Err("Connection ist im Status:" + ConnectionState.ToString() + "  Connection wird neu aufgebaut");
                 
                 Open(this.gatewayIp);
             }
@@ -631,14 +628,13 @@ namespace HomeData
                 byte[] TeleBytes = Tele.bytes;
 
                 // KnxNetForm
-                Log("d>:" + KnxTools.BytesToString(TeleBytes));
+                Debug("d>:" + KnxTools.BytesToString(TeleBytes));
 
                 udpClient.Send(TeleBytes, TeleBytes.Length);
             }
             catch (Exception e)
             {
-                HDDebug.WriteLine(e.ToString());
-                Log("DataAck: " + e.ToString());
+                Err("DataAck: " + e.ToString());
             }
             return;
         }
@@ -657,14 +653,13 @@ namespace HomeData
                 byte[] TeleBytes = Tele.bytes;
 
                 // KnxNetForm
-                Log("D>:" + KnxTools.BytesToString(TeleBytes));
+                Debug("D>:" + KnxTools.BytesToString(TeleBytes));
 
                 udpClient.Send(TeleBytes, TeleBytes.Length);
             }
             catch (Exception e)
             {
-                HDDebug.WriteLine(e.ToString());
-                Log("Send: " + e.ToString());
+                Err("Send: " + e.ToString());
             }
             return ;
         }
@@ -680,11 +675,11 @@ namespace HomeData
             IPEndPoint e = new IPEndPoint(IPAddress.Any, 0);
             Byte[] receiveBytes =  udpClient.EndReceive(ar, ref e);
             Anz++;
-            HDDebug.WriteLine("Empf: Telegr[" + Anz + "]=" + KnxTools.BytesToString(receiveBytes));
+            Debug("Empf: Telegr[" + Anz + "]=" + KnxTools.BytesToString(receiveBytes));
             int AnzBytes = receiveBytes.Length;
             if (AnzBytes < 7)
             {
-                Log("Err: Telegramm zu kurz, wird verworfen. " + KnxTools.BytesToString(receiveBytes));
+                Err("Err: Telegramm zu kurz, wird verworfen. " + KnxTools.BytesToString(receiveBytes));
                 return;
             }
             try
@@ -696,53 +691,53 @@ namespace HomeData
                     switch (receiveBytes[3])
                     {
                         case 0x01:  // Search Request
-                            HDDebug.WriteLine("Search Request from Gateway");
-                            Log("<S:" + KnxTools.BytesToString(receiveBytes));
+                            Debug("Search Request from Gateway");
+                            Debug("<S:" + KnxTools.BytesToString(receiveBytes));
                             break;
                         case 0x02:  // Search Response
                             _channelId = receiveBytes[6];
-                            HDDebug.WriteLine("Search Response from Gateway");
-                            Log("<s:" + KnxTools.BytesToString(receiveBytes));
+                            Debug("Search Response from Gateway");
+                            Debug("<s:" + KnxTools.BytesToString(receiveBytes));
                             break;
                         case 0x03:  // Description Request
-                            HDDebug.WriteLine("Description Request from Gateway");
-                            Log("<D:" + KnxTools.BytesToString(receiveBytes));
+                            Debug("Description Request from Gateway");
+                            Debug("<D:" + KnxTools.BytesToString(receiveBytes));
                             break;
                         case 0x04:  // Description Response
                             _channelId = receiveBytes[6];
-                            HDDebug.WriteLine("Description Response from Gateway");
-                            Log("<d:" + KnxTools.BytesToString(receiveBytes));
+                            Debug("Description Response from Gateway");
+                            Debug("<d:" + KnxTools.BytesToString(receiveBytes));
                             break;
                         case 0x05:  // Connect Request
-                            HDDebug.WriteLine("Connection Request from Gateway");
-                            Log("<O:" + KnxTools.BytesToString(receiveBytes));
+                            Info("Connection Request from Gateway");
+                            Debug("<O:" + KnxTools.BytesToString(receiveBytes));
                             break;
                         case 0x06:  // Connect Response
                             _channelId = receiveBytes[6];
-                            HDDebug.WriteLine("ChannelId = " + _channelId);
-                            Log("<o:" + KnxTools.BytesToString(receiveBytes));
+                            Info("ChannelId = " + _channelId);
+                            Debug("<o:" + KnxTools.BytesToString(receiveBytes));
                             if (receiveBytes[7] == 0) ConnectionState = KnxConnectionState.connected;
                             break;
                         case 0x07:  // Heartbeat Request
-                            HDDebug.WriteLine("HeartbeatRequest for ChannelId = " + _channelId);
-                            Log("<H:" + KnxTools.BytesToString(receiveBytes));
+                            Debug("HeartbeatRequest for ChannelId = " + _channelId);
+                            Debug("<H:" + KnxTools.BytesToString(receiveBytes));
                             break;
                         case 0x08:  // Heartbeat Response
-                            HDDebug.WriteLine("HeartbeatResponse from ChannelId = " + _channelId);
-                            Log("<h:" + KnxTools.BytesToString(receiveBytes));
+                            Debug("HeartbeatResponse from ChannelId = " + _channelId);
+                            Debug("<h:" + KnxTools.BytesToString(receiveBytes));
                             if (receiveBytes[7] == 0) ConnectionState = KnxConnectionState.connected;
                             break;
                         case 0x09:  // Disconnect Request
-                            HDDebug.WriteLine("DisconnectRequest for ChannelId = " + _channelId);
-                            Log("<C:" + KnxTools.BytesToString(receiveBytes));
+                            Debug("DisconnectRequest for ChannelId = " + _channelId);
+                            Debug("<C:" + KnxTools.BytesToString(receiveBytes));
                             break;
                         case 0x0A:  // Disconnect Response
-                            HDDebug.WriteLine("Disconnected ChannelId = " + _channelId);
-                            Log("<c:" + KnxTools.BytesToString(receiveBytes));
+                            Debug("Disconnected ChannelId = " + _channelId);
+                            Debug("<c:" + KnxTools.BytesToString(receiveBytes));
                             if (receiveBytes[7] == 0) ConnectionState = KnxConnectionState.disconnected;
                             break;
                         default:
-                            Log("<?:" + KnxTools.BytesToString(receiveBytes));
+                            Debug("<?:" + KnxTools.BytesToString(receiveBytes));
                             break;
                     }
 
@@ -761,7 +756,7 @@ namespace HomeData
                         Array.Copy(receiveBytes, idx, t, 0, len);
                         // und cemi Telegramm daraus erzeugen
                         cEMI emi = new cEMI(t);
-                        Log(emi.ToString());
+                        Debug("ReceiveCallback: "+emi.ToString());
                         // Suchen des passenden HDKnx Objektes
                         HDKnx hdKnx = HDKnxHandler.GetObject(emi);
                         // und dort den Wert setzen, falls erforderlich
@@ -796,18 +791,15 @@ namespace HomeData
                     }
                     else if (receiveBytes[3] == 0x21)
                     {   // Bestätigung eines Datentelegramm
-                        HDDebug.WriteLine("Daten bestätigt  status = " + receiveBytes[9]);
-                        Log("Daten bestätigt.  status = " + receiveBytes[9]);
+                        Debug("Daten bestätigt  status = " + receiveBytes[9]);
                     }
                 }
                 ar = udpClient.BeginReceive(new AsyncCallback(ReceiveCallback), Anz);
             }
             catch (Exception ex)
             {
-
-                HDDebug.WriteLine(ex.ToString());
-                Log("Err: Telegr[" + Anz + "]=" + KnxTools.BytesToString(receiveBytes));
-                Log("Err: ReceiveCallback: " + ex.ToString());
+                Err("Err: Telegr[" + Anz + "]=" + KnxTools.BytesToString(receiveBytes));
+                Err("Err: ReceiveCallback: " + ex.ToString());
                 ar = udpClient.BeginReceive(new AsyncCallback(ReceiveCallback), Anz);
             }
         }

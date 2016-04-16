@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Xml;
 using Knx;
-using HDObjects;
+
 
 namespace HomeData
 {
@@ -48,7 +48,19 @@ namespace HomeData
     {
 
         static SortedList<EIB_Adress,HDKnx> hdKnxObjList = new SortedList<EIB_Adress,HDKnx>();
+        public delegate void MsgDelegate(string Text);
 
+        static MsgDelegate Debug = LogIntern;
+
+        public static void SetDebugTo(MsgDelegate DebugFunction)
+        {
+            Debug = DebugFunction;
+        }
+
+        private static void LogIntern(String txt)
+        {
+            Console.WriteLine(txt);
+        }
 
         public static void WriteParametersToFile(string XmlFileName)
         {
@@ -73,7 +85,7 @@ namespace HomeData
             }
             catch (Exception eX)
             {
-                HDDebug.WriteLine(eX.ToString());
+                Debug(eX.ToString());
             }
 
         }
@@ -112,7 +124,7 @@ namespace HomeData
             catch (FileNotFoundException fnfeX)
             {
                 list = null;
-                HDDebug.WriteLine(fnfeX.ToString());
+                Debug(fnfeX.ToString());
                 return ;
             }
             finally

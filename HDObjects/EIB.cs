@@ -111,11 +111,15 @@ namespace EIBDef
         GA_L_TE = 0x1101,
         GA_S_TE = 0x1102,
         GA_Z_WASSER_V = 0x1103,
-        GA_Z_KLINGEL = 0x1104,
+        GA_Z_KLINGEL1 = 0x1104,
+        GA_Z_KLINGEL2 = 0x1105,
+        GA_Z_KLINGEL3 = 0x1106,
+        GA_Klingelbel = 0x1107,
         GA_L_TE_F = 0x1115,
         GA_S_TE_F = 0x1116,
         GA_Z_WASSER_F = 0x1117,
         GA_Z_KLINGEL_F = 0x1118,
+
 
         GA_L_WZH_E = 0x111F,  // 
         GA_L_WZV_E = 0x1120,  // 
