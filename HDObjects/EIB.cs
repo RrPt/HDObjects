@@ -580,7 +580,7 @@ namespace EIBDef
     ///</summary>
     public class EIB_Telegramm
     {
-        private const int EIB_Phys_Source_Adr = 0x1280; // 1.2.128
+        private const int EIB_Phys_Source_Adr = 0x1164; // 1.1.100
 
         private EIB_Adress m_source;                    // physik. Absenderaddr
         private EIB_Adress m_destination;               // Zieladr
