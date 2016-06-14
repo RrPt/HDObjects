@@ -548,6 +548,57 @@ namespace HomeData
         {
             return m_value;
         }
+
+
+        public override bool Equals(System.Object obj)
+        {
+            try
+            {
+                // If parameter is null return false.
+                if (obj == null)
+                {
+                    return false;
+                }
+
+                // If parameter cannot be cast to Point return false.
+                cEMI p = obj as cEMI;
+                if ((System.Object)p == null)
+                {
+                    return false;
+                }
+
+                // Return true if the fields match:
+                Console.WriteLine("Vergleiche: \r\n{0} == \r\n{1}", this, p);
+                if (!p.m_source.Equals(m_source)) return false;
+                if (!p.m_destination.Equals(m_destination)) return false;
+                if (p.DataLen != DataLen) return false;
+                if (p.m_APCI != m_APCI) return false;
+
+                for (int i = 0; i < m_value.Length; i++)
+                {
+                    Console.WriteLine("Data[{0}]= {1} == {2}", i, m_value[i], p.m_value[i]);
+                    if (p.m_value[i] != m_value[i]) return false;
+                }
+
+                TimeSpan zeitDiff = p.m_ReceiveTime - receiveTime;
+                if (Math.Abs(zeitDiff.TotalMilliseconds) > 500) return false;
+
+                return true;
+            }
+            catch (Exception)
+            {
+
+                return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return m_value.GetHashCode();
+        }
+
+
+
     }
 
 }

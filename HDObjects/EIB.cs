@@ -252,6 +252,7 @@ namespace EIBDef
         // Vergleich zweier Adr.
         public bool Equals(EIB_Adress obj)
         {
+            if (obj==null) return false;
             if (m_Typ != obj.m_Typ) return false;
             return m_Adr == obj.m_Adr;
         }

@@ -133,8 +133,8 @@ namespace HomeData
                 if (fs == null) return ;
                 StreamReader reader = new StreamReader(fs);
                 String line;
-                String teil;
-                int pos;
+                //String teil;
+                //int pos;
                 // Read  lines from the file until the end of 
                 // the file is reached.
                 while ((line = reader.ReadLine()) != null)
