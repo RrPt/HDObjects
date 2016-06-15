@@ -68,18 +68,19 @@ namespace HomeData
 
         public override String ToString()
         {
+            String erg = "";
             try
             {
-                String erg = time + ": [" + m_destAdr.ToString().PadRight(7) + "] " + name.PadRight(45) + " " + DataToString().PadRight(10);
+                erg = time + ": [" + m_destAdr.ToString().PadRight(7) + "] " + name.PadRight(45) + " " + DataToString().PadRight(10);
+
+            }
+            catch (Exception)
+            {
+                erg = "<keine darstellung möglich>";
+            } 
                 return erg;
 
             }
-            catch (Exception )
-            {
-
-                return "no info";
-            }
-        }
 
         /// <summary>
         /// Setzt den RAW Wert aus einem Telegramm
@@ -101,6 +102,31 @@ namespace HomeData
             rawValue = rawData;
         }
 
+        public override bool Equals(System.Object obj)
+        {
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to Point return false.
+            HDKnx p = obj as HDKnx;
+            if ((System.Object)p == null)
+            {
+                return false;
+    }
+
+            // Return true if the fields match:
+            if (!destAdr.Equals(p.destAdr)) return false;
+            //if (!eisTyp.Equals(p.eisTyp)) return false;
+            return   emi.Equals(p.emi);
+        }
+
+        public override int GetHashCode()
+        {
+            return emi.GetHashCode();
+        }
 
     }
 }

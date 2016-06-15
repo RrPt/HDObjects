@@ -39,7 +39,7 @@ namespace Knx
 
         public override String ToString()
         {
-            String erg = base.ToString() + "  EIS14 = " + value.ToString();
+            String erg = base.ToString() + "  EIS14 = " + value.ToString().PadRight(8);
             return erg;
         }
 

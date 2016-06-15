@@ -289,6 +289,7 @@ namespace HomeData
         UdpClient udpClient ;
         IAsyncResult ar;
         int AnzTelegramme = 0;
+        HDKnx last_hdKnx = new HDKnx();
         Queue<cEMI> fromKnxQueue = new Queue<cEMI>();
         byte _channelId = 0;
         private static Timer timerHeartbeat;
@@ -761,32 +762,43 @@ namespace HomeData
                         HDKnx hdKnx = HDKnxHandler.GetObject(emi);
                         // und dort den Wert setzen, falls erforderlich
                         hdKnx.SetValue(emi);
-                        hdKnx.emi = emi; 
+                        // und auch das emi übergeben
+                        hdKnx.emi = emi;
 
-                        // Rohdaten melden falls gewünscht
-                        if (rawTelegramReceived != null)
+                        // Prüfen auf doppelte Telegramme
+                        if (hdKnx.Equals(last_hdKnx))
+                        {   // verwerfen
+                            //Info("doppeltes Telegramm verworfen:");
+                        }
+                        else
                         {
-                            rawTelegramReceived(t);
-                        }
+                            Console.WriteLine("Setze last Telegramm: \r\nvon {0} == \r\nzu  {1}",last_hdKnx, hdKnx);
 
-                        // geänderte Daten melden falls gewünscht
-                        if (dataChanged != null)
-                        {
-                            dataChanged(hdKnx);
-                        }
-
-                        if (telegramReceived != null)
-                        {   // Ein Delegate ist eingerichtet, dann diesen aufrufen
-                            telegramReceived(emi);
-                        }
-                        if (QueueEnable)
-                        {   // in Queue speichern
-                            lock (fromKnxQueue)
+                            last_hdKnx = new HDKnx(hdKnx.emi);
+                            // Rohdaten melden falls gewünscht
+                            if (rawTelegramReceived != null)
                             {
-                                fromKnxQueue.Enqueue(emi);
+                                rawTelegramReceived(t);
+                            }
+
+                            // geänderte Daten melden falls gewünscht
+                            if (dataChanged != null)
+                            {
+                                dataChanged(hdKnx);
+                            }
+
+                            if (telegramReceived != null)
+                            {   // Ein Delegate ist eingerichtet, dann diesen aufrufen
+                                telegramReceived(emi);
+                            }
+                            if (QueueEnable)
+                            {   // in Queue speichern
+                                lock (fromKnxQueue)
+                                {
+                                    fromKnxQueue.Enqueue(emi);
+                                }
                             }
                         }
-
 
                     }
                     else if (receiveBytes[3] == 0x21)
