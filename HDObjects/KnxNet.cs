@@ -535,9 +535,17 @@ namespace HomeData
 
                 int Anz = (int)ar.AsyncState;
                 IPEndPoint e = new IPEndPoint(IPAddress.Any, 0);
-                udpClient.EndReceive(ar, ref e);
+                try
+                {
+                    udpClient.EndReceive(ar, ref e);
+                    udpClient.Close();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    
+                }
 
-                udpClient.Close();
+                
             }
             catch (Exception e)
             {
