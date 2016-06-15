@@ -277,7 +277,7 @@ namespace HomeData
         public int gatewayPort = 3671;
         public string gatewayIp;
         public delegate void MsgDelegate(string Text);
-        //public delegate void InfoDelegate(string Text);
+        public delegate void InfoDelegate(string Text);
         public delegate void TelegramReceivedDelegate(cEMI emi);
         public delegate void RawTelegramReceivedDelegate(byte[] raw);
         public delegate void DataChangedDelegate(HDKnx hdKnx);
