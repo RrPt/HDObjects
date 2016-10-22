@@ -251,8 +251,8 @@ namespace EIBDef
         GA_P_EIB = 0x2817,
         GA_P_KUEHLGERAETE = 0x2818,
 
-        GA_P_ZAEHLERSTAND = 0x2864,
-        GA_P_SET_ZAEHLERSTAND = 0x2865,
+        GA_P_H2O_ZAEHLERSTAND = 0x2864,
+        GA_P_SET_H2O_ZAEHLERSTAND = 0x2865,
 
         // Mittelgruppe 1 = Umweltsensoren
         GA_Z_Aussentemp = 0x2901,
