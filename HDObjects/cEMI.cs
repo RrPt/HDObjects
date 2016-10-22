@@ -584,7 +584,7 @@ namespace HomeData
                 }
 
                 // Return true if the fields match:
-                Console.WriteLine("Vergleiche: \r\n{0} == \r\n{1}", this, p);
+                //Console.WriteLine("Vergleiche: \r\n{0} == \r\n{1}", this, p);
                 if (!p.m_source.Equals(m_source)) return false;
                 if (!p.m_destination.Equals(m_destination)) return false;
                 if (p.DataLen != DataLen) return false;
@@ -592,7 +592,7 @@ namespace HomeData
 
                 for (int i = 0; i < m_value.Length; i++)
                 {
-                    Console.WriteLine("Data[{0}]= {1} == {2}", i, m_value[i], p.m_value[i]);
+                    //Console.WriteLine("Data[{0}]= {1} == {2}", i, m_value[i], p.m_value[i]);
                     if (p.m_value[i] != m_value[i]) return false;
                 }
 
