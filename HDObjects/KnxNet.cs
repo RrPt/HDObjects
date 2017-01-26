@@ -531,7 +531,7 @@ namespace HomeData
 
 
                 // Den Heartbeat Timer stoppen
-                timerHeartbeat.Stop();
+                //timerHeartbeat.Stop();
 
                 int Anz = (int)ar.AsyncState;
                 IPEndPoint e = new IPEndPoint(IPAddress.Any, 0);
@@ -544,6 +544,7 @@ namespace HomeData
                 {
                     
                 }
+                timerHeartbeat.Stop();
 
                 
             }
