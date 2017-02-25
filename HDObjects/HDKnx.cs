@@ -71,7 +71,7 @@ namespace HomeData
             String erg = "";
             try
             {
-                erg = time + ": [" + m_destAdr.ToString().PadRight(7) + "] " + name.PadRight(45) + " " + DataToString().PadRight(10);
+                erg = time.ToString("dd.MM HH:mm:ss ") + ": [" + emi.sourceAdr.ToString().PadLeft(7) + "-->" +  m_destAdr.ToString().PadRight(7) + "] "  + " " + DataToString().PadRight(10) + name.PadRight(45);
 
             }
             catch (Exception)
