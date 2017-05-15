@@ -141,6 +141,8 @@ namespace EIBDef
         GA_L_SZ_SCHRANK = 0x1202,  // 
         GA_L_SZ_BETT_R = 0x1203,  // 
         GA_L_SZ_SCHRANK_R = 0x1204,  // 
+        GA_L_K2 = 0x1205,  // 
+        GA_L_K2_R = 0x1206,  // 
 
         GA_Dim2_K1_Schalten = 0x1229,  // 
         GA_Dim2_K2_Schalten = 0x122A,  // 
@@ -164,13 +166,13 @@ namespace EIBDef
         GA_L_Eingang = 0x1302,
         GA_Z_Luefter = 0x1303,
         GA_Z_WASSER_H = 0x1304,
-        GA_Z_HEBEFIX = 0x1305,
+        GA_Z_RELAIS5 = 0x1305,
         GA_E_RELAIS6 = 0x1306,
-        GA_Z_Zirkulationspumpe = 0x1307,
+        //GA_Z_RELAIS7 = 0x1307,
         GA_S_TUER = 0x1308,
 
         // Mittelgruppe 4 = Taster
-        GA_L_K2_Schalter = 0x1401,
+        //GA_L_K2_Schalter = 0x1401,
         //GA_Z_EING1_2 = 0x1402,
         //GA_Z_EING1_3 = 0x1403,
         //GA_Z_EING1_4 = 0x1404,
