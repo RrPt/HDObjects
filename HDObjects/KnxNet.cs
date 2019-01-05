@@ -357,7 +357,7 @@ namespace HomeData
         /// <param name="txt"></param>
         private void LogIntern(String txt)
         {
-            Console.WriteLine(txt);
+          //  Console.WriteLine(txt);
         }
 
 
@@ -781,7 +781,7 @@ namespace HomeData
                         }
                         else
                         {
-                            Console.WriteLine("Setze last Telegramm: \r\nvon {0} == \r\nzu  {1}",last_hdKnx, hdKnx);
+                            //Console.WriteLine("Setze last Telegramm: \r\nvon {0} == \r\nzu  {1}",last_hdKnx, hdKnx);
 
                             last_hdKnx = new HDKnx(hdKnx.emi);
                             // Rohdaten melden falls gewünscht

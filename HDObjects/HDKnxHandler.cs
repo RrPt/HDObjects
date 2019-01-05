@@ -59,7 +59,7 @@ namespace HomeData
 
         private static void LogIntern(String txt)
         {
-            Console.WriteLine(txt);
+           // Console.WriteLine(txt);
         }
 
         public static void WriteParametersToFile(string XmlFileName)
@@ -151,7 +151,7 @@ namespace HomeData
                 // the file is reached.
                 while ((line = reader.ReadLine()) != null)
                 {
-                    Console.WriteLine(line);
+                  //  Console.WriteLine(line);
 
                     try
                     {
@@ -169,7 +169,7 @@ namespace HomeData
                         else if (typ.StartsWith("EIS 4)")) ttt = Type.GetType("Knx.EIS4");  // Datum
                         else
                         {
-                            Console.WriteLine(typ);
+                          //  Console.WriteLine(typ);
                         }
 
                         HDKnx o = (HDKnx)Activator.CreateInstance(ttt);
