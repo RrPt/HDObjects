@@ -793,7 +793,9 @@ namespace HomeData
                             // geänderte Daten melden falls gewünscht
                             if (dataChanged != null)
                             {
+                                Debug("KnxNet.ReceiveCallback vor dataChanged" + t.ToString());
                                 dataChanged(hdKnx);
+                                Debug("KnxNet.ReceiveCallback nach dataChanged" + t.ToString());
                             }
 
                             if (telegramReceived != null)
@@ -806,6 +808,7 @@ namespace HomeData
                                 {
                                     fromKnxQueue.Enqueue(emi);
                                 }
+                                Debug("AddToQueue: " + emi.ToString());
                             }
                         }
 
