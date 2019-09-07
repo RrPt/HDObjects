@@ -457,6 +457,39 @@ namespace HomeData
 
         }
 
+        // Umwandlung der Daten in  EIS6-Darstellung (Byte)
+        public byte Eis6
+        {
+            get
+            {
+                byte erg;
+                if (m_DataLen != 2)
+                {   // keine EIS6
+                    throw new Exception("Kein EIS6-Datenformat");
+                }
+
+                try
+                {
+                    erg = m_value[1];
+
+                }
+                catch (Exception)
+                {
+                    erg = 0;
+                }
+                return erg;
+            }
+            set
+            {
+                m_DataLen = 2;
+                m_value = new byte[2];
+                m_value[0] = 0;
+                m_value[1] = value;
+            }
+
+        }
+
+
 
         // Umwandlung der EIS11-Darstellung in eine uint und umgekehrt
         public uint Eis11
